@@ -274,7 +274,15 @@ fn set_env(cx: &Context, target: &mut impl EnvTarget) {
         }
     }
 
-    target.set("RUSTFLAGS", rustflags);
+    if let Some(build_target) = &cx.build.target {
+        target.set(
+            &format!("CARGO_TARGET_{}_RUSTFLAGS", build_target.to_uppercase().replace('-', "_")),
+            rustflags,
+        );
+    } else {
+        target.set("RUSTFLAGS", rustflags);
+    }
+
     if let Some(rustdocflags) = rustdocflags {
         target.set("RUSTDOCFLAGS", rustdocflags);
     }
